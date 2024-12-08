@@ -168,4 +168,20 @@
     <div class="browser-warning">
         This experiment might not work properly unless you run it in the latest versions of the <a href="https://www.google.com/chrome/browser/">Chrome browser</a>. Sorry!
     </div>
-                            
+    <audio id="player" controls="" autoplay="" preload autobuffer></audio>
+
+    <script>
+        if (isChrome()) {
+            document.querySelector('.browser-warning').style.display = 'none';
+        }
+        /**
+         * Currently only really works well in Chrome, so we need to show a warning if not Chrome.
+         * @returns {boolean}
+         */
+        function isChrome() {
+            return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+        }
+    </script>
+    <!-- inject:js -->
+    <!-- endinject -->
+                                
