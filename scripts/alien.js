@@ -119,3 +119,109 @@ var alienFactory = (function() {
                     aliensToRemove.push(i);
                 }
             }
+            // remove any aliens that have made it past the player
+            for(i = aliensToRemove.length - 1; i >= 0; --i) {
+                el = aliens[aliensToRemove[i]].el;
+                var removedAliens = aliens.splice(aliensToRemove[i], 1);
+                removedAliens[0].sound.stop();
+                document.querySelector('.scene').removeChild(el);
+            }
+
+            return aliensToRemove.length;
+        },
+
+        aliens: function() {
+            return aliens;
+        }
+    };
+
+
+
+    function getAlienConfig(alienDefinition) {
+        var motionFunction, colorClass;
+
+        /**
+         * Alien motion functions. All take the z position of the alien as an argument, and return
+         * an object with x and y properties.
+         * The functions are called within the context of an alien object, so `this` will refer to
+         * the alien itself.
+         */
+        var noMotion = function() {
+            return {
+                x: this.x,
+                y: this.y
+            };
+        };
+
+        var verticalOscillation = function(speed) {
+            return function() {
+                var y = this.y + Math.sin(this.z / 1000 * speed) * viewportHeight / 4;
+                var x = this.x;
+                return {
+                    x: x,
+                    y: y
+                };
+            }
+        };
+
+        var horizontalOscillation = function(speed) {
+            return function() {
+                var y = this.y;
+                var x = this.x + Math.sin(this.z / 1000 * speed) * viewportWidth / 4;
+                return {
+                    x: x,
+                    y: y
+                };
+            }
+        };
+
+        var spiral = function(speed) {
+            return function() {
+                var y = this.y + Math.cos(this.z / 1000 * speed) * viewportWidth / 4;
+                var x = this.x + Math.sin(this.z / 1000 * speed) * viewportWidth / 4;
+                return {
+                    x: x,
+                    y: y
+                };
+            }
+        };
+
+        var random = function(speed) {
+            var noiseX = new Simple1DNoise();
+            noiseX.setAmplitude(viewportWidth/2);
+            var noiseY = new Simple1DNoise();
+            noiseY.setAmplitude(viewportHeight/2);
+
+            return function() {
+                var y = this.y + noiseY.getVal(this.z / 1000 * speed);
+                var x = this.x + noiseX.getVal(this.z / 1000 * speed);
+                return {
+                    x: x,
+                    y: y
+                };
+            }
+        };
+
+        if (alienDefinition.class === ALIEN_CLASS.stationary) {
+            motionFunction = noMotion;
+            colorClass = 'orange';
+        } else if (alienDefinition.class === ALIEN_CLASS.vertical) {
+            motionFunction = verticalOscillation(alienDefinition.speed);
+            colorClass = 'red';
+        } else if (alienDefinition.class === ALIEN_CLASS.horizontal) {
+            motionFunction = horizontalOscillation(alienDefinition.speed);
+            colorClass = 'blue';
+        } else if (alienDefinition.class === ALIEN_CLASS.spiral) {
+            motionFunction = spiral(alienDefinition.speed);
+            colorClass = 'green';
+        } else if (alienDefinition.class === ALIEN_CLASS.random) {
+            motionFunction = random(alienDefinition.speed);
+            colorClass = 'white';
+        }
+
+        return {
+            motionFunction: motionFunction,
+            colorClass: colorClass
+        };
+    }
+})();
