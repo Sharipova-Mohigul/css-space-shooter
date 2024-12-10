@@ -22,3 +22,16 @@ gulp.task('scripts', function() {
         .pipe(uglify())
         .pipe(gulp.dest('./dist/assets/'));
 });
+gulp.task('less', function() {
+
+    return gulp.src('./styles/app.less')
+        .pipe(less())
+        .pipe(gulp.dest('./styles'));
+});
+
+gulp.task('minify-css', ['less'], function() {
+
+    return gulp.src('./styles/app.css')
+        .pipe(minifyCss())
+        .pipe(gulp.dest('./dist/assets/'));
+});
