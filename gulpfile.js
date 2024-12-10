@@ -35,3 +35,28 @@ gulp.task('minify-css', ['less'], function() {
         .pipe(minifyCss())
         .pipe(gulp.dest('./dist/assets/'));
 });
+gulp.task('static-assets', function() {
+    return gulp.src([
+        './assets*/**/*',
+        './vendor*/**/*'
+    ])
+        .pipe(gulp.dest('./dist/'));
+ });
+ 
+ gulp.task('build', ['less'], function() {
+ 
+     var sourcesBuild = gulp.src([
+         './scripts/!(game|controller|music)*.js',
+         './scripts/music.js',
+         './scripts/game.js',
+         './scripts/controller.js',
+         './styles/app.css'
+     ], {read: false});
+ 
+ 
+     return gulp.src('index.src.html')
+         .pipe(inject(sourcesBuild, { addRootSlash: false }))
+         .pipe(rename('index.html'))
+         .pipe(gulp.dest('./'));
+ 
+ });
