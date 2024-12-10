@@ -86,3 +86,11 @@ gulp.task('compile', ['scripts', 'minify-css', 'static-assets', 'inject-analytic
         .pipe(gulp.dest('dist'));
 
 });
+gulp.task('default', ['static-assets', 'build'], function() {
+    console.log('Watching JS files...');
+    console.log('Watching Less files...');
+    console.log('Watching index.src.html...');
+    gulp.watch('styles/*.less', ['less']);
+    gulp.watch('index.src.html', ['build']);
+    gulp.watch('scripts/*.js', ['scripts']);
+});
