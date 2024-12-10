@@ -60,3 +60,29 @@ gulp.task('static-assets', function() {
          .pipe(gulp.dest('./'));
  
  });
+ gulp.task('inject-analytics', function() {
+
+    return gulp.src('index.src.html')
+        .pipe(inject(gulp.src(['./google-analytics.html']), {
+            starttag: '<!-- inject:analytics -->',
+            transform: function (filePath, file) {
+                // return file contents as string
+                return file.contents.toString('utf8')
+            }
+        }))
+        .pipe(rename('index.html'))
+        .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('compile', ['scripts', 'minify-css', 'static-assets', 'inject-analytics'], function() {
+
+    var sourcesDist = gulp.src([
+        'assets/*.js',
+        'assets/*.css'
+    ], {read: false, cwd: 'dist'});
+
+    var index = gulp.src('index.html', {cwd: 'dist'})
+        .pipe(inject(sourcesDist, { addRootSlash: false }))
+        .pipe(gulp.dest('dist'));
+
+});
